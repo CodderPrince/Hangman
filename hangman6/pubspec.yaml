@@ -1,0 +1,38 @@
+name: hangman
+description: "A new Flutter project."
+
+publish_to: 'none' # Prevent accidental publishing to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.6.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  audioplayers: ^6.1.0 # Updated to resolve compatibility issue
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/PRINCE.jpg
+    - assets/images/NAZMUL.jpg
+    - assets/images/NISHAT.jpg
+    - assets/images/JAHANARA.jpg
+    - assets/images/AMIRUL.jpg
+    - assets/images/PRIYANKA.jpg
+    - assets/images/SH.jpg
+    - assets/images/NOO.jpg
+    - assets/sounds/correct.mp3
+    - assets/sounds/incorrect.mp3
+    - assets/sounds/game_over.mp3
+    - assets/sounds/victory.mp3

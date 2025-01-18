@@ -1,0 +1,31 @@
+name: hangman2
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter:
+  uses-material-design: true
+
+  # Specify your custom app icon path
+  assets:
+    - assets/appIcon.png
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/appIcon.png"

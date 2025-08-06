@@ -116,125 +116,140 @@ class GamePlayScreen extends StatelessWidget {
   final VoidCallback onBack;
   final String currentImagePath;
 
-  const GamePlayScreen(
-      {super.key,
-        required this.currentGuess,
-        required this.attemptsLeft,
-        required this.message,
-        required this.inputController,
-        required this.onGuess,
-        required this.onPlayAgain,
-        required this.onBack,
-        required this.currentImagePath
-      });
+  const GamePlayScreen({
+    super.key,
+    required this.currentGuess,
+    required this.attemptsLeft,
+    required this.message,
+    required this.inputController,
+    required this.onGuess,
+    required this.onPlayAgain,
+    required this.onBack,
+    required this.currentImagePath,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ScreenLayout(
-      startColor: Color(0xFF00008B),
-      endColor: Colors.cyan,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Container(
-              constraints: BoxConstraints(
-                maxHeight: 228,
-              ),
-              child: Image.asset(
-                currentImagePath,
-                fit: BoxFit.contain,
-              ),
-            ),
-            Column(
-              children: [
-                Text(
-                  "$currentGuess",
-                  style: TextStyle(
-                    fontFamily: 'Times New Roman',
-                    fontSize: 30,
-                    color: Colors.yellow,
+    return SafeArea(
+      top: false,
+      left: false,
+      right: false,
+      bottom: false,
+      child: ScreenLayout(
+        startColor: Color(0xFF00008B),
+        endColor: Colors.cyan,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Container(
+                  constraints: BoxConstraints(
+                    maxHeight: 228,
+                  ),
+                  child: Image.asset(
+                    currentImagePath,
+                    fit: BoxFit.contain,
                   ),
                 ),
-                SizedBox(height: 10),
-                Text(
-                  "Attempts Left: $attemptsLeft",
-                  style: TextStyle(
-                    fontFamily: 'Arial Rounded MT Bold',
-                    fontSize: 15,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(height: 20),
-                SizedBox(
-                  height: 40, // Reduced height of TextField
-                  child: TextField(
-                    controller: inputController,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 20, // Reduced font size
-                      fontFamily: 'Arial Rounded MT Bold',
-                      color: Colors.white,
+                Column(
+                  children: [
+                    Text(
+                      "$currentGuess",
+                      style: TextStyle(
+                        fontFamily: 'Times New Roman',
+                        fontSize: 30,
+                        color: Colors.yellow,
+                      ),
                     ),
-                    maxLength: 1,
-                    cursorColor: Colors.blue,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]')),
-                    ],
-                    decoration: InputDecoration(
-                        counterText: "",
-                        hintText: "Enter a letter",
-                        hintStyle: TextStyle(color: Colors.white),
-                        filled: true,
-                        fillColor: Colors.white.withOpacity(0.5),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        )),
-                    onSubmitted: (input) => onGuess(input),
-                    onChanged: (text){
-                      if (text.length > 1) {
-                        inputController.text = text.substring(0,1);
-                        inputController.selection = TextSelection.fromPosition(TextPosition(offset: inputController.text.length));
-                      }
-                    },
-                  ),
+                    SizedBox(height: 10),
+                    Text(
+                      "Attempts Left: $attemptsLeft",
+                      style: TextStyle(
+                        fontFamily: 'Arial Rounded MT Bold',
+                        fontSize: 15,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    SizedBox(
+                      height: 40,
+                      child: TextField(
+                        controller: inputController,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'Arial Rounded MT Bold',
+                          color: Colors.white,
+                        ),
+                        maxLength: 1,
+                        cursorColor: Colors.blue,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]')),
+                        ],
+                        decoration: InputDecoration(
+                          counterText: "",
+                          hintText: "Enter a letter",
+                          hintStyle: TextStyle(color: Colors.white),
+                          filled: true,
+                          fillColor: Colors.white.withOpacity(0.5),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        onSubmitted: (input) => onGuess(input),
+                        onChanged: (text) {
+                          if (text.length > 1) {
+                            inputController.text = text.substring(0, 1);
+                            inputController.selection = TextSelection.fromPosition(
+                              TextPosition(offset: inputController.text.length),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      message,
+                      style: TextStyle(
+                        fontFamily: 'Arial',
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 10),
-                Text(
-                  message,
-                  style: TextStyle(
-                      fontFamily: 'Arial', fontSize: 18, color: Colors.white),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SmallStyledButton(
+                      text: "Back",
+                      onPressed: onBack,
+                      startColor: Color(0xFF9370DB),
+                      endColor: Color(0xFF8A2BE2),
+                    ),
+                    SizedBox(width: 8),
+                    SmallStyledButton(
+                      text: "Play Again",
+                      onPressed: onPlayAgain,
+                      startColor: Color(0xFF007519),
+                      endColor: Color(0xFF007519),
+                    ),
+                    SizedBox(width: 8),
+                    SmallStyledButton(
+                      text: "Guess",
+                      onPressed: () => onGuess(inputController.text),
+                      startColor: Color(0xFFFF4500),
+                      endColor: Color(0xFFFF8C00),
+                    ),
+                  ],
                 ),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SmallStyledButton(
-                  text: "Back",
-                  onPressed: onBack,
-                  startColor: Color(0xFF9370DB),
-                  endColor: Color(0xFF8A2BE2),
-                ),
-                SizedBox(width: 8),
-                SmallStyledButton(
-                  text: "Play Again",
-                  onPressed: onPlayAgain,
-                  startColor: Color(0xFF007519),
-                  endColor: Color(0xFF007519),
-                ),
-                SizedBox(width: 8),
-                SmallStyledButton(
-                  text: "Guess",
-                  onPressed: () => onGuess(inputController.text),
-                  startColor: Color(0xFFFF4500),
-                  endColor: Color(0xFFFF8C00),
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );

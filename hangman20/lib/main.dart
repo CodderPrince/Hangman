@@ -8,6 +8,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isLoggedIn = prefs.getString('userId') != null;
-  String initialRoute = isLoggedIn ? HangmanGame.routeName : LoginPage.routeName;
+  String initialRoute =
+      isLoggedIn ? HangmanGame.routeName : LoginPage.routeName;
   runApp(HangmanApp(initialRoute: initialRoute));
 }

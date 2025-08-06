@@ -1,14 +1,13 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'animal.dart';
 import 'game_screens.dart';
 import 'leaderboard_screen.dart';
-import 'styled_button.dart';
 import 'progress_manager.dart';
-import 'flower.dart'; // Import flower.dart
+import 'flower.dart';
 
-// CategoryData Class
 abstract class CategoryData {
   static Map<String, List<String>> categoryWordBank = {};
   static Map<String, String> imageMapping = {};
@@ -40,6 +39,7 @@ class _HangmanGameState extends State<HangmanGame> {
   final TextEditingController _inputController = TextEditingController();
   late String userId;
   late Map<String, Type> categories;
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -49,6 +49,7 @@ class _HangmanGameState extends State<HangmanGame> {
     _loadCategoryData(currentCategory);
     resetGame();
   }
+
   void _initializeCategories() {
     categories = {
       'Animal': AnimalData,
@@ -60,6 +61,7 @@ class _HangmanGameState extends State<HangmanGame> {
     prefs = await SharedPreferences.getInstance();
     userId = prefs.getString('userId') ?? '';
   }
+
   void _loadCategoryData(String category) {
     if (categories.containsKey(category)) {
       if (category == "Flower"){
@@ -92,6 +94,15 @@ class _HangmanGameState extends State<HangmanGame> {
     return words[random.nextInt(words.length)];
   }
 
+  Future<void> playSound(String path) async {
+    try {
+      await _audioPlayer.stop();
+      await _audioPlayer.play(AssetSource(path));
+    } catch (e) {
+      print("Error playing sound: $e");
+    }
+  }
+
   void handleGuess(String input) {
     if (input.isEmpty) {
       setState(() {
@@ -99,6 +110,7 @@ class _HangmanGameState extends State<HangmanGame> {
       });
       return;
     }
+
 
     final RegExp letterRegex = RegExp(r'^[a-zA-Z]$');
     if (!letterRegex.hasMatch(input)) {
@@ -119,11 +131,11 @@ class _HangmanGameState extends State<HangmanGame> {
         newGuessList.add(guessedLetter);
         correctGuess = true;
       } else {
-        newGuessList.add(
-            currentGuess[i * 2]); // Correct indexing for the letter/underscore
+        newGuessList.add(currentGuess[i * 2]);
       }
       if (i < hiddenWord.length - 1) newGuessList.add(" ");
     }
+
     String newGuess = newGuessList.join();
 
     if (!correctGuess) {
@@ -131,11 +143,14 @@ class _HangmanGameState extends State<HangmanGame> {
       setState(() {
         message = "Incorrect guess!";
       });
+      playSound("sounds/wrong.mp3");
     } else {
       setState(() {
         message = "Correct guess!";
       });
+      playSound("sounds/correct.mp3");
     }
+
     currentGuess = newGuess;
     _inputController.clear();
 
@@ -151,69 +166,64 @@ class _HangmanGameState extends State<HangmanGame> {
   void showGameOverDialog() {
     ProgressManager.saveProgress(userId, currentCategory, attemptsLeft, false);
     showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20), // Rounded corners
-          ),
-          title: Text("Game Over"),
-          content: Container(
-            constraints: BoxConstraints(
-              maxWidth: 600,
-              maxHeight: 850,
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text("Game Over! The word was: $hiddenWord"),
-                  SizedBox(height: 20),
-                  Image.asset(
-                    currentImagePath,
-                    fit: BoxFit.cover,
-                  ),
-                ],
-              ),
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text("Game Over"),
+        content: Container(
+          constraints: BoxConstraints(maxWidth: 600, maxHeight: 850),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("Game Over! The word was: $hiddenWord"),
+                SizedBox(height: 20),
+                Image.asset(currentImagePath, fit: BoxFit.cover),
+              ],
             ),
           ),
-          actions: <Widget>[
-            TextButton(
-                onPressed: () => Navigator.pop(context), child: Text("Ok"))
-          ],
-        ));
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context), child: Text("Ok"))
+        ],
+      ),
+    );
   }
 
-  void showVictoryDialog() {
+  void showVictoryDialog() async {
     ProgressManager.saveProgress(userId, currentCategory, attemptsLeft, true);
+
+    // Animal or Flower sound path
+    final soundPath = currentCategory == "Animal"
+        ? "sounds/animal_sounds/${hiddenWord.toUpperCase()}.mp3"
+        : "sounds/flower_sounds/${hiddenWord.toUpperCase()}.mp3";
+
+    playSound(soundPath);
+
     showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text("Congratulations!"),
-          content: Container(
-            constraints: BoxConstraints(
-              maxWidth: 600,
-              maxHeight: 850,
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                      "Congratulations! You've guessed the word: $hiddenWord"),
-                  SizedBox(height: 20),
-                  Image.asset(
-                    currentImagePath,
-                    fit: BoxFit.cover,
-                  ),
-                ],
-              ),
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Congratulations!"),
+        content: Container(
+          constraints: BoxConstraints(maxWidth: 600, maxHeight: 850),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("You've guessed the word: $hiddenWord"),
+                SizedBox(height: 20),
+                Image.asset(currentImagePath, fit: BoxFit.cover),
+              ],
             ),
           ),
-          actions: <Widget>[
-            TextButton(
-                onPressed: () => Navigator.pop(context), child: Text("Ok"))
-          ],
-        ));
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context), child: Text("Ok"))
+        ],
+      ),
+    );
   }
 
   void _switchToGameScreen() {
@@ -233,15 +243,14 @@ class _HangmanGameState extends State<HangmanGame> {
   Widget build(BuildContext context) {
     switch (_currentScreen) {
       case GameScreen.initial:
-
         return InitialScreen(
           currentCategory: currentCategory,
           categoryWordBank: categories.keys.fold({}, (map, key) {
-            if (key == "Flower"){
+            if (key == "Flower") {
               return map..addAll(FlowerData.categoryWordBank);
-            } else if (key == "Animal"){
+            } else if (key == "Animal") {
               return map..addAll(AnimalData.categoryWordBank);
-            } else{
+            } else {
               return map;
             }
           }),
@@ -252,8 +261,9 @@ class _HangmanGameState extends State<HangmanGame> {
           },
           onStartGame: _switchToGameScreen,
           onExitGame: () => Navigator.of(context).pop(),
-          showLeaderboard: () => _showLeaderboard(),
+          showLeaderboard: _showLeaderboard,
         );
+
       case GameScreen.game:
         return GamePlayScreen(
           currentGuess: currentGuess,
@@ -269,15 +279,16 @@ class _HangmanGameState extends State<HangmanGame> {
           onBack: _switchToInitialScreen,
           currentImagePath: currentImagePath,
         );
+
       default:
         return InitialScreen(
           currentCategory: currentCategory,
           categoryWordBank: categories.keys.fold({}, (map, key) {
-            if (key == "Flower"){
+            if (key == "Flower") {
               return map..addAll(FlowerData.categoryWordBank);
-            } else if (key == "Animal"){
+            } else if (key == "Animal") {
               return map..addAll(AnimalData.categoryWordBank);
-            } else{
+            } else {
               return map;
             }
           }),
@@ -288,7 +299,7 @@ class _HangmanGameState extends State<HangmanGame> {
           },
           onStartGame: _switchToGameScreen,
           onExitGame: () => Navigator.of(context).pop(),
-          showLeaderboard: () => _showLeaderboard(),
+          showLeaderboard: _showLeaderboard,
         );
     }
   }
@@ -303,6 +314,8 @@ class _HangmanGameState extends State<HangmanGame> {
   @override
   void dispose() {
     _inputController.dispose();
+    _audioPlayer.dispose();
     super.dispose();
   }
 }
+

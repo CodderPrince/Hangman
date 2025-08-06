@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'progress_manager.dart';
-import 'package:intl/intl.dart';
 import 'leaderboard_model.dart';
 import 'database_helper.dart';
 import 'dart:math';
@@ -87,9 +86,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         itemBuilder: (context, index) {
           final entry = leaderboardData[index];
           final randomLightColor = Color.fromRGBO(
-            _random.nextInt(156) + 100,
-            _random.nextInt(156) + 100,
-            _random.nextInt(156) + 100,
+            _random.nextInt(156) + 255,
+            _random.nextInt(156) + 255,
+            _random.nextInt(156) + 255,
             1,
           );
           return Card(
@@ -101,7 +100,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 entry.userName,
                 style: const TextStyle(
                   fontSize: 25,
-                  color: Colors.black,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+
                   fontFamily: 'Arial Rounded MT Bold', // Apply font
                 ),
               ),
@@ -111,7 +112,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   Text(
                     "Category: ${entry.category}",
                     style: const TextStyle(
-                        color: Colors.black,
+                        color: Colors.white,
                         fontSize: 20,
                         fontFamily: 'Arial Rounded MT Bold' // Apply font
                     ),
@@ -119,7 +120,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   Text(
                     "Attempts: ${entry.attempts}",
                     style: const TextStyle(
-                      color: Colors.black,
+                      color: Colors.white,
                       fontSize: 20,
                       fontFamily: 'Arial Rounded MT Bold', // Apply font
                     ),
@@ -127,7 +128,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   Text(
                     "Time: ${entry.time}",
                     style: const TextStyle(
-                      color: Colors.black,
+                      color: Colors.white,
                       fontSize: 20,
                       fontFamily: 'Arial Rounded MT Bold', // Apply font
                     ),
@@ -135,7 +136,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   Text(
                     "Win: ${entry.isWin}",
                     style: const TextStyle(
-                      color: Colors.black,
+                      color: Colors.white,
                       fontSize: 20,
                       fontFamily: 'Arial Rounded MT Bold', // Apply font
                     ),

@@ -1,0 +1,2 @@
+C:/Flutter Project/Practice/Hangman/Hangman-main/hangman23/android/app/.cxx/Debug/4kd6y403/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Flutter Project/Practice/Hangman/Hangman-main/hangman23/android/app/.cxx/Debug/4kd6y403/arm64-v8a/CMakeFiles/rebuild_cache.dir
